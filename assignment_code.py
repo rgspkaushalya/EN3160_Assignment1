@@ -289,3 +289,22 @@ for a0,im,t in zip(ax[1:], [sobel_cv,sobel_own,sobel_sep], ['filter2D','Own conv
     a0.imshow(im,cmap='gray'); a0.axis('off'); a0.set_title(t)
 plt.tight_layout(); plt.show()
 print('Mean absolute difference: own vs filter2D =',np.mean(np.abs(sobel_own.astype(float)-sobel_cv.astype(float))))
+
+
+
+fig,ax=plt.subplots(1,4,figsize=(10.5,2.8))
+ax[0].imshow(cv2.cvtColor(flower,cv2.COLOR_BGR2RGB)); ax[0].axis('off'); ax[0].set_title('Original')
+ax[1].imshow(fgmask,cmap='gray'); ax[1].axis('off'); ax[1].set_title('GrabCut mask')
+ax[2].imshow(cv2.cvtColor(cv2.bitwise_and(flower,flower,mask=fgmask),cv2.COLOR_BGR2RGB)); ax[2].axis('off'); ax[2].set_title('Foreground')
+ax[3].imshow(cv2.cvtColor(enh,cv2.COLOR_BGR2RGB)); ax[3].axis('off'); ax[3].set_title('Blurred background')
+plt.tight_layout(); plt.show()
+
+fig,ax=plt.subplots(1,3,figsize=(9,3.4))
+for a0,im,t in zip(ax,[lake,gaussian,bilateral_cv],['Original','Gaussian blur (9×9, σ=7)','OpenCV bilateral']):
+    a0.imshow(cv2.cvtColor(im,cv2.COLOR_BGR2RGB)); a0.axis('off'); a0.set_title(t)
+plt.tight_layout(); plt.show()
+fig,ax=plt.subplots(1,2,figsize=(8,4))
+ax[0].imshow(cv2.cvtColor(bilateral_cv,cv2.COLOR_BGR2RGB)); ax[0].axis('off'); ax[0].set_title('OpenCV bilateral')
+ax[1].imshow(cv2.cvtColor(bilateral_own,cv2.COLOR_BGR2RGB)); ax[1].axis('off'); ax[1].set_title('Custom bilateral')
+plt.tight_layout(); plt.show()
+print(f'MAE = {mae:.3f}, MSE = {mse:.3f}, PSNR = {psnr:.2f} dB')
