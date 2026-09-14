@@ -1,8 +1,3 @@
-# ============================================================
-# EN3160 Assignment 1 - Setup and reusable functions
-# Run this cell first (or use Kernel -> Restart & Run All).
-# Keep the `images` folder in the same project folder as this notebook.
-# ============================================================
 import os
 from pathlib import Path
 import cv2
@@ -127,10 +122,6 @@ def bilateral_custom(im, d=9, sigma_s=7, sigma_r=25):
             num += n * w[:, :, None]
             den += w
     return np.clip(num/(den[:, :, None] + 1e-8), 0, 255).astype(np.uint8)
-
-# ---------------------------
-# Prepare all variables used by later cells.
-# ---------------------------
 
 # Q1
 face = cv2.imread(str(IMG / "fig1.png"), cv2.IMREAD_GRAYSCALE)
@@ -316,9 +307,9 @@ print('Mean absolute difference: own vs filter2D =',np.mean(np.abs(sobel_own.ast
 for name, small, original in images:
     nn = zoom_nearest(small, scale)
     bl = zoom_bilinear(small, scale)
-    H, W = original.shape[:2]
-    nn = nn[:H, :W]
-    bl = bl[:H, :W]
+    h, w = original.shape[:2]
+    nn = nn[:h, :w]
+    bl = bl[:h, :w]
     nn_ssd = normalized_ssd(nn, original)
     bl_ssd = normalized_ssd(bl, original)
     print(f"{name}")
