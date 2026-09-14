@@ -210,6 +210,29 @@ gx3 = cv2.filter2D(cv2.filter2D(ein, cv2.CV_32F, smooth), cv2.CV_32F, deriv)
 gy3 = cv2.filter2D(cv2.filter2D(ein, cv2.CV_32F, deriv.T), cv2.CV_32F, smooth.T)
 sobel_sep = cv2.normalize(np.sqrt(gx3*gx3 + gy3*gy3), None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
+# Q8
+def read_gray_q8(name):
+    path = IMG / name
+    im = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+    if im is None:
+        raise FileNotFoundError(f"Could not read image: {path}")
+    return im
+im01_original = read_gray_q8("im01.png")
+im01_small = read_gray_q8("im01small.png")
+im02_original = read_gray_q8("im02.png")
+im02_small = read_gray_q8("im02small.png")
+im03_original = read_gray_q8("im03.png")
+im03_small = read_gray_q8("im03small.png")
+im04_original = read_gray_q8("im04.jpg")
+im04_small = read_gray_q8("im04small.jpg")
+scale = 4
+images = [
+    ("IM01", im01_small, im01_original),
+    ("IM02", im02_small, im02_original),
+    ("IM03", im03_small, im03_original),
+    ("IM04", im04_small, im04_original)
+]
+
 # Q9
 flower = cv2.imread(str(IMG / "fig8.png"))
 h, w = flower.shape[:2]
@@ -290,7 +313,25 @@ for a0,im,t in zip(ax[1:], [sobel_cv,sobel_own,sobel_sep], ['filter2D','Own conv
 plt.tight_layout(); plt.show()
 print('Mean absolute difference: own vs filter2D =',np.mean(np.abs(sobel_own.astype(float)-sobel_cv.astype(float))))
 
-
+for name, small, original in images:
+    nn = zoom_nearest(small, scale)
+    bl = zoom_bilinear(small, scale)
+    H, W = original.shape[:2]
+    nn = nn[:H, :W]
+    bl = bl[:H, :W]
+    nn_ssd = normalized_ssd(nn, original)
+    bl_ssd = normalized_ssd(bl, original)
+    print(f"{name}")
+    print(f"  Original size : {original.shape}")
+    print(f"  Small size    : {small.shape}")
+    print(f"  Zoomed size   : {nn.shape}")
+    print(f"  Nearest NSSD  : {nn_ssd:.6f}")
+    print(f"  Bilinear NSSD : {bl_ssd:.6f}")
+    print()
+    fig, ax = plt.subplots(1, 3, figsize=(10, 3));ax[0].imshow(original, cmap="gray");ax[0].set_title("Original");ax[0].axis("off")
+    ax[1].imshow(nn, cmap="gray");ax[1].set_title(f"Nearest Neighbor\nNSSD = {nn_ssd:.6f}");ax[1].axis("off")
+    ax[2].imshow(bl, cmap="gray");ax[2].set_title(f"Bilinear\nNSSD = {bl_ssd:.6f}");ax[2].axis("off")
+    plt.tight_layout();plt.show()
 
 fig,ax=plt.subplots(1,4,figsize=(10.5,2.8))
 ax[0].imshow(cv2.cvtColor(flower,cv2.COLOR_BGR2RGB)); ax[0].axis('off'); ax[0].set_title('Original')
