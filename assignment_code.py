@@ -282,3 +282,10 @@ ax[1,1].imshow(woman); ax[1,1].axis('off'); ax[1,1].set_title('Original')
 ax[1,2].imshow(foreground_eq); ax[1,2].axis('off'); ax[1,2].set_title('Equalized foreground')
 ax[1,3].plot(np.cumsum(hist_fg)); ax[1,3].set_title('Foreground CDF'); ax[1,3].set_xlabel('Intensity')
 plt.tight_layout(); plt.show()
+
+fig,ax=plt.subplots(1,4,figsize=(10.5,2.8))
+ax[0].imshow(ein,cmap='gray'); ax[0].axis('off'); ax[0].set_title('Input')
+for a0,im,t in zip(ax[1:], [sobel_cv,sobel_own,sobel_sep], ['filter2D','Own convolution','Separable']):
+    a0.imshow(im,cmap='gray'); a0.axis('off'); a0.set_title(t)
+plt.tight_layout(); plt.show()
+print('Mean absolute difference: own vs filter2D =',np.mean(np.abs(sobel_own.astype(float)-sobel_cv.astype(float))))
